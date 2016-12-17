@@ -1,0 +1,28 @@
+---
+# tasks file for celery
+- name: "install subversion"
+  apt: name={{ item }} state=installed
+  with_items:
+    - subversion
+    - libapache2-svn
+
+- name: "checkout latest projects from subversion"
+  command: chdir=/home/ubuntu svn --non-interactive --no-auth-cache --username {{username}} --password {{password}} co {{url}}
+
+- name: "create directory for certificates"
+  file: path=/etc/docker/certs.d/{{registry}}:{{port}} state=directory
+
+- name: "install certificates to docker registry"
+  command: chdir=/home/ubuntu/appliance cp domain.crt /etc/docker/certs.d/{{registry}}:{{port}}/ca.crt
+
+- name: "install certificate to local share path"
+  command: chdir=/home/ubuntu/appliance cp domain.crt /usr/local/share/ca-certificates/{{registry}}.crt
+
+- name: "update ca certificates"
+  command: update-ca-certificates
+
+- name: "restart docker service"
+  service: name=docker state=restarted
+
+- name: "launch docker instances"
+  command: chdir=/home/ubuntu/appliance docker-compose up -d
