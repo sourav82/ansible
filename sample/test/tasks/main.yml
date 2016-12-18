@@ -1,4 +1,4 @@
 - name: "Sample task"
-  command: echo "hello world"
+  script: infinite.sh
 
 
