@@ -1,0 +1,4 @@
+- name: "Sample playbook for testing"
+  hosts: all
+  roles:
+    - test
